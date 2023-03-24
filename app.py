@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 Session(app)
 
 def dict_factory(cursor, row):
@@ -137,6 +137,7 @@ print(rows)
 @app.route("/search")
 def search():
     return render_template("search.html", apiinput = apiinput)
+
 
 #//List of TODO//
 

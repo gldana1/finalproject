@@ -5,11 +5,33 @@
 {% endblock %}
 
 {% block main %}
-    <b>
-        OKTOK
-    </b>
-    <p>
-        {{ apiinput }}
-    </p>
+    <h2>
+        Search Results
+    </h2>
+    <br>
+    <br>
+    <table class="table table-striped-columns table-responsive">
+        <tr>
+            {% for res in apiinput["d"] %}
+            <td class="col-1" onclick="details()" ><img src = "{{ res["i"]["imageUrl"] }}" width = 100%></th>
+            {% endfor %}
+        <tr>
+        <tr>    
+            {% for res in apiinput["d"] %}
+                <th class="col-1">{{ res["l"] }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for res in apiinput["d"] %}
+                <td>{{ res["y"] }}</td>
+                {% endfor %}
+        </tr>
+    </table>
+    <script>
+        function details()
+            
+    </script>
+
+
 
 {% endblock %}
