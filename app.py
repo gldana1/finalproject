@@ -70,17 +70,13 @@ def login():
         return render_template("login.html")
     
 
+
 @app.route("/logout")
 def logout():
     """Log user out"""
-
     # Forget any user_id
     session.clear()
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+
     # Redirect user to login form
     return redirect("/")
 
@@ -117,6 +113,30 @@ print(rows)
 @app.route("/")
 def homepage():
     return render_template("index.html")
+
+apiinput = {"d":
+[{"i":{"height":1922,"imageUrl":"https://m.media-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg","width":1280},"id":"tt0386676","l":"The Office","q":"TV series","qid":"tvSeries","rank":86,"s":"Steve Carell, Jenna Fischer","y":2005,"yr":"2005-2013"}
+,
+{"i":{"height":1377,"imageUrl":"https://m.media-amazon.com/images/M/MV5BOTA5MzQ3MzI1NV5BMl5BanBnXkFtZTgwNTcxNTYxMTE@._V1_.jpg","width":930},"id":"tt0151804","l":"Office Space","q":"feature","qid":"movie","rank":1213,"s":"Ron Livingston, Jennifer Aniston","y":1999}
+,
+{"i":{"height":828,"imageUrl":"https://m.media-amazon.com/images/M/MV5BYWI2YmI2ZmMtMTZjMC00MzMzLWI5ODItNDY1OTg3YjNmZmUxXkEyXkFqcGdeQXVyNDA5NTgxNjU@._V1_.jpg","width":591},"id":"tt0290978","l":"The Office","q":"TV series","qid":"tvSeries","rank":2377,"s":"Ricky Gervais, Martin Freeman","y":2001,"yr":"2001-2003"}
+,
+{"i":{"height":1350,"imageUrl":"https://m.media-amazon.com/images/M/MV5BNmFjZDE2YzQtOWZhOC00MzA4LWEyMDYtNWEyMDE2MGFjZThkXkEyXkFqcGdeQXVyMTI1OTkzMzQ5._V1_.jpg","width":1080},"id":"tt20877972","l":"The Office","q":"TV series","qid":"tvSeries","rank":11282,"s":"Saleh Abuamrh, Fahad Albutairi","y":2022,"yr":"2022-2023"}
+,
+{"i":{"height":1276,"imageUrl":"https://m.media-amazon.com/images/M/MV5BYzgyZjE1MjUtYjFjZS00NzMzLWFmNWMtMDJjNGY0ZTgwYjc3XkEyXkFqcGdeQXVyMjQwMjk0NjI@._V1_.jpg","width":882},"id":"tt1711525","l":"Office Christmas Party","q":"feature","qid":"movie","rank":9925,"s":"Jason Bateman, Olivia Munn","y":2016}
+,
+{"i":{"height":1440,"imageUrl":"https://m.media-amazon.com/images/M/MV5BODJlNDcxNzMtODBlYS00Yzc1LTg2NDEtNDJkYTlkNmM0NWY2XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg","width":1000},"id":"tt6251024","l":"Office Uprising","q":"feature","qid":"movie","rank":16595,"s":"Brenton Thwaites, Jane Levy","y":2018}
+,
+{"i":{"height":1702,"imageUrl":"https://m.media-amazon.com/images/M/MV5BMjk2MzU0ZGItZjkwNi00YTZjLThkMmMtZWE1N2U0NGY0NjY5XkEyXkFqcGdeQXVyMjk1MjQ3NzI@._V1_.jpg","width":1156},"id":"tt12194000","l":"Out of Office","q":"TV movie","qid":"tvMovie","rank":10310,"s":"Ken Jeong, Jay Pharoah","y":2022}
+,
+{"i":{"height":400,"imageUrl":"https://m.media-amazon.com/images/M/MV5BYTc3MDkzZDEtZjI4OC00YzAwLWI4YjUtZDllZTFhYWNhYTJjXkEyXkFqcGdeQXVyNjExODE1MDc@._V1_.jpg","width":286},"id":"tt0292829","l":"Office Office","q":"TV series","qid":"tvSeries","rank":44931,"s":"Pankaj Kapur, Deven Bhojani","y":2000}]
+,"q":"office","v":1}
+
+
+print(rows)
+@app.route("/search")
+def search():
+    return render_template("search.html", apiinput = apiinput)
 
 #//List of TODO//
 
