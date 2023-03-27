@@ -3,6 +3,7 @@ import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+from markupsafe import escape
 
 app = Flask(__name__)
 
@@ -134,9 +135,15 @@ apiinput = {"d":
 
 
 print(rows)
-@app.route("/search")
+@app.route("/search", methods=["GET", "POST"])
 def search():
-    return render_template("search.html", apiinput = apiinput)
+    if request.method == "GET":
+        return render_template("search.html", apiinput=apiinput)
+
+    if request.method == "POST":
+        cs =  request.form.get("q")
+        print(cs)
+        return render_template("test.html", apiinput=apiinput, cs=cs)
 
 
 #//List of TODO//
