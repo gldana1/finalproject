@@ -1,11 +1,28 @@
 import os
 import sqlite3
+import requests
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from markupsafe import escape
 
 app = Flask(__name__)
+
+#api call
+def apicall(item):
+    url = "https://imdb8.p.rapidapi.com/auto-complete"
+
+    querystring = {"q":item}
+
+    headers = {
+        "X-RapidAPI-Key": "de32aed7c6mshc427496794b63e2p151e0fjsn9afca0074b65",
+        "X-RapidAPI-Host": "imdb8.p.rapidapi.com"
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    return response
+
 
 
 # Configure session to use filesystem (instead of signed cookies)
@@ -115,7 +132,7 @@ print(rows)
 def homepage():
     return render_template("index.html")
 
-apiinput = {"d":
+""" apiinput = {"d":
 [{"i":{"height":1922,"imageUrl":"https://m.media-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg","width":1280},"id":"tt0386676","l":"The Office","q":"TV series","qid":"tvSeries","rank":86,"s":"Steve Carell, Jenna Fischer","y":2005,"yr":"2005-2013"}
 ,
 {"i":{"height":1377,"imageUrl":"https://m.media-amazon.com/images/M/MV5BOTA5MzQ3MzI1NV5BMl5BanBnXkFtZTgwNTcxNTYxMTE@._V1_.jpg","width":930},"id":"tt0151804","l":"Office Space","q":"feature","qid":"movie","rank":1213,"s":"Ron Livingston, Jennifer Aniston","y":1999}
@@ -130,12 +147,12 @@ apiinput = {"d":
 ,
 {"i":{"height":1702,"imageUrl":"https://m.media-amazon.com/images/M/MV5BMjk2MzU0ZGItZjkwNi00YTZjLThkMmMtZWE1N2U0NGY0NjY5XkEyXkFqcGdeQXVyMjk1MjQ3NzI@._V1_.jpg","width":1156},"id":"tt12194000","l":"Out of Office","q":"TV movie","qid":"tvMovie","rank":10310,"s":"Ken Jeong, Jay Pharoah","y":2022}
 ,
-{"i":{"height":400,"imageUrl":"https://m.media-amazon.com/images/M/MV5BYTc3MDkzZDEtZjI4OC00YzAwLWI4YjUtZDllZTFhYWNhYTJjXkEyXkFqcGdeQXVyNjExODE1MDc@._V1_.jpg","width":286},"id":"tt0292829","l":"Office Office","q":"TV series","qid":"tvSeries","rank":44931,"s":"Pankaj Kapur, Deven Bhojani","y":2000}]
-,"q":"office","v":1}
+]
+,"q":"office","v":1} """
 
 
 #print(rows)
-@app.route("/search")
+@app.route("/search", methods=["GET", "POST"])
 def search():
     return render_template("search.html", apiinput=apiinput)
     
