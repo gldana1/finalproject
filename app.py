@@ -134,16 +134,15 @@ apiinput = {"d":
 ,"q":"office","v":1}
 
 
-print(rows)
-@app.route("/search", methods=["GET", "POST"])
+#print(rows)
+@app.route("/search")
 def search():
-    if request.method == "GET":
-        return render_template("search.html", apiinput=apiinput)
-
-    if request.method == "POST":
-        cs =  request.form.get("q")
-        print(cs)
-        return render_template("test.html", apiinput=apiinput, cs=cs)
+    return render_template("search.html", apiinput=apiinput)
+    
+@app.route("/search/<id>", methods=["GET", "POST"])
+def searchid(id):
+    data = id
+    return render_template("test.html", apiinput=apiinput, data=data)
 
 
 #//List of TODO//

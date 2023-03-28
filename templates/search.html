@@ -32,32 +32,18 @@
     </div>
 
     <script>
-        function reply_click(clicked_id)
-        {
-            const e = clicked_id
-            console.log(e)
-            let data = new FormData()
-            data.append("q",e)
-            console.log(data)
-            const request = new XMLHttpRequest()
-            request.open("POST", "/search")
-            request.send(data)
-            //document.getElementById("links").submit()
-            // window.location.href=("http://127.0.0.1:5000/info")
-            // return false;
-            /*             fetch("/info").then(function (response){
-	            // The API call was successful!
-	            return response.text();
-            }).then(function (html) {
-	            // This is the HTML from our response as a text string
-	            console.log(html);
-                }).catch(function (err) {
-	            // There was an error
-                console.warn('Something went wrong.', err);
-            }); */
+     function reply_click(clicked_id) {
+        const id = encodeURIComponent(clicked_id); // encode the ID in case it contains special characters
+        const url = `/search/${id}`; // construct the URL with the encoded ID
+        fetch(url, { method: 'POST' })
+            .then(response => response.text())
+            .then(data => {
+                document.body.innerHTML = data; // replace the HTML content with the response
+            })
+            .catch(error => console.error(error));
         }
+   
 
-        
     </script>
 
 
