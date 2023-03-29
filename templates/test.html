@@ -1,54 +1,54 @@
-{% extends "search.html" %}
+{% extends "searched.html" %}
 
 {% block title %}
     Search
 {% endblock %}
 
 {% block main %}
-    <h2>
-        Search Results
-    </h2>
-    <br>
-    <br>
-    <div class="table-responsive-sm">
-        <table class="table-light"  >
-            
-            <tr  id="links">
-                {% for res in apiinput["d"] %}
-                <td class="col-1" id="{{res["id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["i"]["imageUrl"] }}" height = 150vh></td>
-                {% endfor %}
-            </tr>
-            <tr>    
-                {% for res in apiinput["d"] %}
-                    <th class="col-1">{{ res["l"] }}</th>
-                {% endfor %}
-            </tr>
-            <tr>
-                {% for res in apiinput["d"] %}
-                    <td>{{ res["y"] }}</td>
-                    {% endfor %}
-            </tr>
-            
+    {{ super() }}
+    <div id = "info" class="p-3 m-0 border-0 bd-example bd-example-cssgrid">
+        <img src = "{{ info[0]["url"] }}" class="rounded float-start" height = 200vh></td>
+        <table>
+            <tc>    
+                <div class="grid gap-3" style="margin-left: 20vw; text-align: left">                      
+                    <div class="p-2 g-col-6" style=" font-size: larger; font-weight: 700;">{{ info[0]["title"] }}</div>
+                    <div class="p-2 g-col-6">Rank: {{ info[0]["rank"] }}</div>   
+                    <div class="p-2 g-col-6">Type: {{ info[0]["type"] }}</div>
+                    <div class="p-2 g-col-6">Year: {{ info[0]["year"] }}</div>
+                    <div class="p-2 g-col-6">Starring {{ info[0]["stars"] }}</div>
+                </div>
+            </tc>
+            <tc>
+                <form action="/search/<id>" method="post">
+                    <div class= "gap-2">
+                        <input type = "checkbox" id = "addfav" class="btn-check">
+                        <label class="btn btn-outline-primary" for="addfav">Watchlist</label>
+                        <input type = "checkbox" id = "addwat" class="btn-check">
+                        <label class="btn btn-outline-primary" for="addwat">Watched</label>
+                    </div>
+                </form>
+            </tc>
         </table>
     </div>
-    <div id = "info">
-        <p>
-            
-            {{  data  }}
-        </p>
-    </div>
-
     <script>
-        function reply_click(clicked_id)
-        {
-            const e = clicked_id
-            console.log(e)
-            let data = new FormData()
-            data.append("q",e)
-            console.log(data)
-            const request = new XMLHttpRequest()
-            request.open("POST", "/search")
-            request.send(data)
+    let watchlist = document.getElementById("addfav");
+    let watched = document.getElementById("addwat")
+    watchlist.addEventListener('click', (e)) => {
+
+    }
+    function addtolist(){
+
+    }
+
+    function reply_click(clicked_id) {
+        const id = encodeURIComponent(clicked_id); // encode the ID in case it contains special characters
+        const url = `/search/${id}`; // construct the URL with the encoded ID
+        fetch(url, { method: 'POST' })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("details").innerHTML = data; // replace the HTML content with the response
+            })
+            .catch(error => console.error(error));
         }
 
         

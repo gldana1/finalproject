@@ -5,8 +5,15 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from markupsafe import escape
+import json
 
 app = Flask(__name__)
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 #api call
 def apicall(item):
@@ -21,7 +28,47 @@ def apicall(item):
 
     response = requests.request("GET", url, headers=headers, params=querystring)
 
-    return response
+    #print(response.text)
+    return response.text
+
+#parse and load response
+def parse(reply):
+    connection = sqlite3.connect("movies.db" , check_same_thread=False)
+    connection.row_factory = dict_factory
+    db = connection.cursor()
+    dictmid = json.loads(reply)
+    dict = dictmid["d"]
+    print (dict)
+    for row in dict:
+        for key in row:    
+        #print (dict[row].keys())
+            try:
+                url = row["i"]["imageUrl"]
+            except:
+                url = ""    
+            ibdb_id = row["id"]
+            title = row["l"]
+            try:
+                type = row["q"]
+            except:
+                type = ""
+            try:
+                rank = row["rank"]
+            except:
+                rank = ""
+            stars = row["s"]
+            try:
+                year = row["y"]
+            except:
+                year = 0    
+        #if "yr" in dict[row]:
+        #    running = dict[row]["yr"]
+            try:
+                db.execute("INSERT INTO movies (url, ibdb_id,title,type,rank,stars,year) VALUES (?,?,?,?,?,?,?)",(url, ibdb_id,title,type,rank,stars,year))
+                connection.commit()
+            except:
+                continue
+    return
 
 
 
@@ -31,11 +78,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 Session(app)
 
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+
 
 @app.after_request
 def after_request(response):
@@ -105,6 +148,10 @@ def register():
         return render_template("register.html")
 
     if request.method == "POST":
+        if not request.form.get("name"):
+            name = "user"
+        else:
+            name = request.form.get("name")
         if not request.form.get("username"):
             flash("username cannot be blank")
             return redirect("/login")
@@ -116,10 +163,11 @@ def register():
             return redirect("/login")
     tmp = request.form.get("password")
     username = request.form.get("username")
-    print(username)
+    
+    #print(username)
     hash = generate_password_hash(request.form.get("password"))
     try:
-        db.execute("INSERT INTO users (username, hash) VALUES (?,?)",(username,hash))
+        db.execute("INSERT INTO users (username, hash, name) VALUES (?,?,?)",(username,hash,name))
         connection.commit()
     except ValueError:
         flash("user already exists")
@@ -127,39 +175,34 @@ def register():
 
 rows = db.execute("SELECT * FROM users").fetchall()
 
-print(rows)
+#print(rows)
 @app.route("/")
 def homepage():
     return render_template("index.html")
 
-""" apiinput = {"d":
-[{"i":{"height":1922,"imageUrl":"https://m.media-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg","width":1280},"id":"tt0386676","l":"The Office","q":"TV series","qid":"tvSeries","rank":86,"s":"Steve Carell, Jenna Fischer","y":2005,"yr":"2005-2013"}
-,
-{"i":{"height":1377,"imageUrl":"https://m.media-amazon.com/images/M/MV5BOTA5MzQ3MzI1NV5BMl5BanBnXkFtZTgwNTcxNTYxMTE@._V1_.jpg","width":930},"id":"tt0151804","l":"Office Space","q":"feature","qid":"movie","rank":1213,"s":"Ron Livingston, Jennifer Aniston","y":1999}
-,
-{"i":{"height":828,"imageUrl":"https://m.media-amazon.com/images/M/MV5BYWI2YmI2ZmMtMTZjMC00MzMzLWI5ODItNDY1OTg3YjNmZmUxXkEyXkFqcGdeQXVyNDA5NTgxNjU@._V1_.jpg","width":591},"id":"tt0290978","l":"The Office","q":"TV series","qid":"tvSeries","rank":2377,"s":"Ricky Gervais, Martin Freeman","y":2001,"yr":"2001-2003"}
-,
-{"i":{"height":1350,"imageUrl":"https://m.media-amazon.com/images/M/MV5BNmFjZDE2YzQtOWZhOC00MzA4LWEyMDYtNWEyMDE2MGFjZThkXkEyXkFqcGdeQXVyMTI1OTkzMzQ5._V1_.jpg","width":1080},"id":"tt20877972","l":"The Office","q":"TV series","qid":"tvSeries","rank":11282,"s":"Saleh Abuamrh, Fahad Albutairi","y":2022,"yr":"2022-2023"}
-,
-{"i":{"height":1276,"imageUrl":"https://m.media-amazon.com/images/M/MV5BYzgyZjE1MjUtYjFjZS00NzMzLWFmNWMtMDJjNGY0ZTgwYjc3XkEyXkFqcGdeQXVyMjQwMjk0NjI@._V1_.jpg","width":882},"id":"tt1711525","l":"Office Christmas Party","q":"feature","qid":"movie","rank":9925,"s":"Jason Bateman, Olivia Munn","y":2016}
-,
-{"i":{"height":1440,"imageUrl":"https://m.media-amazon.com/images/M/MV5BODJlNDcxNzMtODBlYS00Yzc1LTg2NDEtNDJkYTlkNmM0NWY2XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg","width":1000},"id":"tt6251024","l":"Office Uprising","q":"feature","qid":"movie","rank":16595,"s":"Brenton Thwaites, Jane Levy","y":2018}
-,
-{"i":{"height":1702,"imageUrl":"https://m.media-amazon.com/images/M/MV5BMjk2MzU0ZGItZjkwNi00YTZjLThkMmMtZWE1N2U0NGY0NjY5XkEyXkFqcGdeQXVyMjk1MjQ3NzI@._V1_.jpg","width":1156},"id":"tt12194000","l":"Out of Office","q":"TV movie","qid":"tvMovie","rank":10310,"s":"Ken Jeong, Jay Pharoah","y":2022}
-,
-]
-,"q":"office","v":1} """
 
 
 #print(rows)
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    return render_template("search.html", apiinput=apiinput)
+    if request.method == "GET":
+        return render_template("search.html")
+    if request.method == "POST":
+        s = request.form.get("searchbox")
+        try:
+            parse(apicall(s))
+            apiinput = db.execute("SELECT * FROM movies WHERE title LIKE (?)", ['%' + s + '%']).fetchall()
+        except:
+            flash("Please enter in searchbox")
+            return render_template("search.html")
+        return render_template("searched.html", apiinput=apiinput)
     
 @app.route("/search/<id>", methods=["GET", "POST"])
 def searchid(id):
     data = id
-    return render_template("test.html", apiinput=apiinput, data=data)
+    info = db.execute("SELECT * FROM movies WHERE ibdb_id LIKE (?)", [data]).fetchall()
+    print(info)
+    return render_template("test.html", info=info, data=data)
 
 
 #//List of TODO//

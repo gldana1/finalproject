@@ -6,49 +6,21 @@
 
 {% block main %}
     <h2>
-        Search Results
+        Search 
     </h2>
+    <form action="/search" method="post">
+        <div class="input-group ">
+            
+                <input class="form-control rounded-3" autofocus type="text" id="searchbox" name="searchbox">
+                <button class="btn btn-primary" type="submit">Search</button>
+            
+        </div>
+    </form>
     <br>
     <br>
-    <div class="table-responsive-sm">
-        <table class="table-light"  >
-            
-            <tr  id="links">
-                {% for res in apiinput["d"] %}
-                <td class="col-1" id="{{res["id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["i"]["imageUrl"] }}" height = 150vh></td>
-                {% endfor %}
-            </tr>
-            <tr>    
-                {% for res in apiinput["d"] %}
-                    <th class="col-1">{{ res["l"] }}</th>
-                {% endfor %}
-            </tr>
-            <tr>
-                {% for res in apiinput["d"] %}
-                    <td>{{ res["y"] }}</td>
-                    {% endfor %}
-            </tr>
-            
-        </table>
-    </div>
-    <div id = "info">
 
     </div>
 
-    <script>
-     function reply_click(clicked_id) {
-        const id = encodeURIComponent(clicked_id); // encode the ID in case it contains special characters
-        const url = `/search/${id}`; // construct the URL with the encoded ID
-        fetch(url, { method: 'POST' })
-            .then(response => response.text())
-            .then(data => {
-                document.body.innerHTML = data; // replace the HTML content with the response
-            })
-            .catch(error => console.error(error));
-        }
-   
-
-    </script>
 
 
 
