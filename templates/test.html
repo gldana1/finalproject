@@ -17,29 +17,20 @@
                     <div class="p-2 g-col-6">Year: {{ info[0]["year"] }}</div>
                     <div class="p-2 g-col-6">Starring {{ info[0]["stars"] }}</div>
                 </div>
+                <div>
+                    <form action="/search/{{ data }}/" method="post">
+                        
+                            <input type = "submit" id = "addfav" class="btn-check" name="addfav">
+                            <label class="btn btn-primary" for="addfav">Watchlist</label>
+                            <input type = "submit" id = "addwat" class="btn-check" name="addwat">
+                            <label class="btn btn-primary" for="addfav">Watched</label>
+                    </form>
+                </div>
             </tc>
-            <tc>
-                <form action="/search/<id>" method="post">
-                    <div class= "gap-2">
-                        <input type = "checkbox" id = "addfav" class="btn-check">
-                        <label class="btn btn-outline-primary" for="addfav">Watchlist</label>
-                        <input type = "checkbox" id = "addwat" class="btn-check">
-                        <label class="btn btn-outline-primary" for="addwat">Watched</label>
-                    </div>
-                </form>
-            </tc>
+
         </table>
     </div>
     <script>
-    let watchlist = document.getElementById("addfav");
-    let watched = document.getElementById("addwat")
-    watchlist.addEventListener('click', (e)) => {
-
-    }
-    function addtolist(){
-
-    }
-
     function reply_click(clicked_id) {
         const id = encodeURIComponent(clicked_id); // encode the ID in case it contains special characters
         const url = `/search/${id}`; // construct the URL with the encoded ID
@@ -50,10 +41,7 @@
             })
             .catch(error => console.error(error));
         }
-
         
     </script>
-
-
 
 {% endblock %}

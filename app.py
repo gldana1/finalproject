@@ -199,10 +199,34 @@ def search():
     
 @app.route("/search/<id>", methods=["GET", "POST"])
 def searchid(id):
-    data = id
-    info = db.execute("SELECT * FROM movies WHERE ibdb_id LIKE (?)", [data]).fetchall()
-    print(info)
-    return render_template("test.html", info=info, data=data)
+    if request.method == "GET":
+        data = id
+        info = db.execute("SELECT * FROM movies WHERE ibdb_id LIKE (?)", [data]).fetchall()
+        #print(info)
+        return render_template("test.html", info=info, data=data)
+    if request.method == "POST":
+        if  request.form["addfav"]:
+            wl = request.form.get("addfav")
+            data = id
+            user = session["user_id"]
+            movie_id= db.execute("SELECT id FROM movies WHERE ibdb_id LIKE id").fetchone()
+            db.execute("INSERT INTO favorites (user_id,movie_id,watchlist) VALUES (?,?,1)", (user,movie_id))
+            connection.commit()
+            return redirect("/mylist")
+        if  request.form["addwat"]:
+            wl = request.form.get("addwat")
+            data = id
+            user = session["user_id"]
+            movie_id= db.execute("SELECT id FROM movies WHERE ibdb_id LIKE id").fetchone()
+            db.execute("INSERT INTO favorites (user_id,movie_id,watched) VALUES (?,?,1)", (user,movie_id))
+            connection.commit()
+            return redirect("/mylist")
+       
+@app.route("/mylist/")
+def mylist():
+    user = session["user_id"]
+    return render_template("mylist.html")
+
 
 
 #//List of TODO//
