@@ -17,7 +17,7 @@
         
         <tr class="p-1" style="width:10vw !important">
             {% for item in watchlist %}
-            <td><img src = "{{ item["url"] }}" class="rounded " style="width:10vw !important"></td>
+            <td><img src = "{{ item["url"] }}" class="rounded " style="width:100% !important"></td>
             {% endfor %}
         </tr>
         <tr class="p-1" style="width:10vw !important">
@@ -44,14 +44,14 @@
         
         <tr class="p-1" style="width:10vw !important">
             {% for item in watched %}
-            <td><img src = "{{ item["url"] }}" class="rounded " style="width:10vw !important"></td>
+            <td><img src = "{{ item["url"] }}" class="rounded " style="width:100% !important"></td>
             {% endfor %}
         </tr>
         <tr class="p-1" style="width:10vw !important">
             {% for item in watched %}
             <form action="/mylist" method="post">
                 <td><input type = "submit" id = "remwat" class="btn-check" name="remwat">
-                <label class="btn btn-primary" for="remwat">Remove from watched</label></td>
+                <label class="btn btn-primary" for="remwat" style="font-size: x-small;">Remove from watched</label></td>
             </form>
             {% endfor %}
         </tr>

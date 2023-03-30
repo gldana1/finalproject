@@ -1,6 +1,13 @@
 import os
 import requests
-import urllib.parse
+import os
+import sqlite3
+import requests
+from flask import Flask, flash, redirect, render_template, request, session
+from flask_session.__init__ import Session
+from werkzeug.security import check_password_hash, generate_password_hash
+from markupsafe import escape
+import json
 
 from flask import redirect, render_template, request, session
 from functools import wraps
@@ -74,3 +81,9 @@ def parse(reply):
             except:
                 continue
     return
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d

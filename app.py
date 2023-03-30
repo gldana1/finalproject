@@ -6,20 +6,8 @@ from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from markupsafe import escape
 import json
-from helpers import login_required,apicall,parse,
+from helpers import login_required,apicall,parse,dict_factory
 app = Flask(__name__)
-
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
-
-
-
-
-
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -128,7 +116,8 @@ rows = db.execute("SELECT * FROM users").fetchall()
 @app.route("/")
 @login_required
 def homepage():
-    return render_template("index.html")
+    user = db.execute("SELECT name FROM users WHERE id = (?)",(session["user_id"],)).fetchone()
+    return render_template("index.html", user=user)
 
 
 
@@ -188,14 +177,8 @@ def mylist():
         return render_template("mylist.html", watchlist=watchlist, watched=watched)
     if request.method == "POST":
         if  request.form.get("remfav") == "Submit Query":
-                    user = session["user_id"]
+            user = session["user_id"]
         watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
         watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
         print(watchlist)
         return render_template("mylist.html", watchlist=watchlist, watched=watched)
-
-
-#//List of TODO//
-
-#//Grab API from imdb//
-

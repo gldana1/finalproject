@@ -19,16 +19,16 @@
     <br>
     <br>
     <div class="table-responsive-sm">
-        <table class="table-light"  >
+        <table class="table table-borderless d-flex flex row text-wrap"  >
             
-            <tr  id="links">
+            <tr  class="p-1" style="width:10vw !important">
                 {% for res in apiinput %}
-                <td class="col-1" style="width:10vw !important" id="{{res["ibdb_id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["url"] }}" height = 150vh></td>
+                <td class="p-1" style="width:10vw !important" id="{{res["ibdb_id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["url"] }}" style="width:100% !important"></td>
                 {% endfor %}
             </tr>
             <tr>    
                 {% for res in apiinput %}
-                    <th class="col-1" style="width:10vw !important">{{ res["title"] }}</th>
+                    <th class="p-1" style="width:10vw !important">{{ res["title"] }}</th>
                 {% endfor %}
             </tr>
             <tr>
