@@ -329,11 +329,13 @@ th {
   text-align: -webkit-match-parent;
 }
 
+td {
+  max-width: 100vh
+}
 thead,
 tbody,
 tfoot,
 tr,
-td,
 th {
   border-color: inherit;
   border-style: solid;

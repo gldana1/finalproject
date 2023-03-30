@@ -56,7 +56,10 @@ def parse(reply):
                 rank = row["rank"]
             except:
                 rank = ""
-            stars = row["s"]
+            try:
+                stars = row["s"]
+            except:
+                stars = ""
             try:
                 year = row["y"]
             except:
@@ -191,10 +194,10 @@ def search():
         s = request.form.get("searchbox")
         try:
             parse(apicall(s))
-            apiinput = db.execute("SELECT * FROM movies WHERE title LIKE (?)", ['%' + s + '%']).fetchall()
-        except:
+        except ValueError:
             flash("Please enter in searchbox")
             return render_template("search.html")
+        apiinput = db.execute("SELECT * FROM movies WHERE title LIKE (?)", ['%' + s + '%']).fetchall()
         return render_template("searched.html", apiinput=apiinput)
     
 @app.route("/search/<id>", methods=["GET", "POST"])
@@ -205,27 +208,33 @@ def searchid(id):
         #print(info)
         return render_template("test.html", info=info, data=data)
     if request.method == "POST":
-        if  request.form["addfav"]:
-            wl = request.form.get("addfav")
-            data = id
-            user = session["user_id"]
-            movie_id= db.execute("SELECT id FROM movies WHERE ibdb_id LIKE id").fetchone()
-            db.execute("INSERT INTO favorites (user_id,movie_id,watchlist) VALUES (?,?,1)", (user,movie_id))
+        data = id
+        movie = db.execute("SELECT id FROM movies WHERE ibdb_id LIKE (?)", [id]).fetchone()
+        movie_id = movie["id"]
+        print(request.form)
+        print(request.form.get("addwat"))
+        print(request.form.get("addfav"))
+        user = session["user_id"]
+        if  request.form.get("addfav") == "Submit Query":
+            #wl = request.form.get("addfav")
+            db.execute("INSERT INTO favorites (user_id,movie_id,watchlist) VALUES (?,?,1) EXCEPT SELECT user_id,movie_id,watchlist FROM favorites WHERE user_id = ? AND movie_id = ? AND watchlist = 1", (user,movie_id,user,movie_id))
             connection.commit()
             return redirect("/mylist")
-        if  request.form["addwat"]:
-            wl = request.form.get("addwat")
-            data = id
-            user = session["user_id"]
-            movie_id= db.execute("SELECT id FROM movies WHERE ibdb_id LIKE id").fetchone()
-            db.execute("INSERT INTO favorites (user_id,movie_id,watched) VALUES (?,?,1)", (user,movie_id))
+        elif  request.form.get("addwat") == "Submit Query":
+            #wl = request.form.get("addwat")
+            db.execute("INSERT INTO favorites (user_id,movie_id,watched) VALUES (?,?,1) EXCEPT SELECT user_id,movie_id,watched FROM favorites WHERE user_id = ? AND movie_id = ? AND watched = 1", (user,movie_id,user,movie_id))
+            connection.commit()
+            db.execute("DELETE FROM favorites WHERE id IN (SELECT id FROM favorites WHERE user_id = ? AND movie_id = ? AND watchlist = 1)", (user,movie_id))
             connection.commit()
             return redirect("/mylist")
        
-@app.route("/mylist/")
+@app.route("/mylist")
 def mylist():
     user = session["user_id"]
-    return render_template("mylist.html")
+    watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
+    watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
+    print(watchlist)
+    return render_template("mylist.html", watchlist=watchlist, watched=watched)
 
 
 

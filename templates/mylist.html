@@ -5,8 +5,45 @@
 {% endblock %}
 
 {% block main %}
+<h2 style="height: 15vh; vertical-align: middle;">
+    Watchlist
+</h2>
+<div class="table-responsive-md">
+    <table class="table table-borderless d-flex flex row text-wrap">
+        
+        {% for item in watchlist %}
+        <th class="p-1" style="width:10vw !important">{{  item["title"]  }}</th>
+        {% endfor %}
+        
+        <tr class="p-1" style="width:10vw !important">
+            {% for item in watchlist %}
+            <td><img src = "{{ item["url"] }}" class="rounded " style="width:10vw !important"></td>
+            {% endfor %}
+        </tr>
+        
+    </table>
+    <div>
+    </div>
+    <h2 style="height: 15vh; vertical-align: middle;">
+        Watched
+    </h2>
 
-
+    <table class="table table-borderless d-flex flex row text-wrap">
+        
+        {% for item in watched %}
+        <th class="p-1" style="width:10vw !important"> {{  item["title"]  }}</th>
+        {% endfor %}
+        
+        <tr class="p-1" style="width:10vw !important">
+            {% for item in watched %}
+            <td><img src = "{{ item["url"] }}" class="rounded " style="width:10vw !important"></td>
+            {% endfor %}
+        </tr>
+        
+    </table>
+  </div>
+  
+{{ user }}
 
 
 {% endblock %}

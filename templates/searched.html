@@ -46,10 +46,10 @@
      function reply_click(clicked_id) {
         const id = encodeURIComponent(clicked_id); // encode the ID in case it contains special characters
         const url = `/search/${id}`; // construct the URL with the encoded ID
-        fetch(url, { method: 'POST' })
+        fetch(url, { method: 'GET' })
             .then(response => response.text())
             .then(data => {
-                document.body.innerHTML = data; // replace the HTML content with the response
+                window.location.href = url; // replace the HTML content with the response
             })
             .catch(error => console.error(error));
         }
