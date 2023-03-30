@@ -23,17 +23,17 @@
             
             <tr  id="links">
                 {% for res in apiinput %}
-                <td class="col-1" id="{{res["ibdb_id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["url"] }}" height = 150vh></td>
+                <td class="col-1" style="width:10vw !important" id="{{res["ibdb_id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["url"] }}" height = 150vh></td>
                 {% endfor %}
             </tr>
             <tr>    
                 {% for res in apiinput %}
-                    <th class="col-1">{{ res["title"] }}</th>
+                    <th class="col-1" style="width:10vw !important">{{ res["title"] }}</th>
                 {% endfor %}
             </tr>
             <tr>
                 {% for res in apiinput %}
-                    <td>{{ res["year"] }}</td>
+                    <td style="width:10vw !important">{{ res["year"] }}</td>
                     {% endfor %}
             </tr>
             

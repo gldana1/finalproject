@@ -6,7 +6,7 @@ from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from markupsafe import escape
 import json
-
+from helpers import login_required,apicall,parse,
 app = Flask(__name__)
 
 def dict_factory(cursor, row):
@@ -15,63 +15,9 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
-#api call
-def apicall(item):
-    url = "https://imdb8.p.rapidapi.com/auto-complete"
 
-    querystring = {"q":item}
 
-    headers = {
-        "X-RapidAPI-Key": "de32aed7c6mshc427496794b63e2p151e0fjsn9afca0074b65",
-        "X-RapidAPI-Host": "imdb8.p.rapidapi.com"
-    }
 
-    response = requests.request("GET", url, headers=headers, params=querystring)
-
-    #print(response.text)
-    return response.text
-
-#parse and load response
-def parse(reply):
-    connection = sqlite3.connect("movies.db" , check_same_thread=False)
-    connection.row_factory = dict_factory
-    db = connection.cursor()
-    dictmid = json.loads(reply)
-    dict = dictmid["d"]
-    print (dict)
-    for row in dict:
-        for key in row:    
-        #print (dict[row].keys())
-            try:
-                url = row["i"]["imageUrl"]
-            except:
-                url = ""    
-            ibdb_id = row["id"]
-            title = row["l"]
-            try:
-                type = row["q"]
-            except:
-                type = ""
-            try:
-                rank = row["rank"]
-            except:
-                rank = ""
-            try:
-                stars = row["s"]
-            except:
-                stars = ""
-            try:
-                year = row["y"]
-            except:
-                year = 0    
-        #if "yr" in dict[row]:
-        #    running = dict[row]["yr"]
-            try:
-                db.execute("INSERT INTO movies (url, ibdb_id,title,type,rank,stars,year) VALUES (?,?,?,?,?,?,?)",(url, ibdb_id,title,type,rank,stars,year))
-                connection.commit()
-            except:
-                continue
-    return
 
 
 
@@ -178,15 +124,17 @@ def register():
 
 rows = db.execute("SELECT * FROM users").fetchall()
 
-#print(rows)
+
 @app.route("/")
+@login_required
 def homepage():
     return render_template("index.html")
 
 
 
-#print(rows)
+
 @app.route("/search", methods=["GET", "POST"])
+@login_required
 def search():
     if request.method == "GET":
         return render_template("search.html")
@@ -201,6 +149,7 @@ def search():
         return render_template("searched.html", apiinput=apiinput)
     
 @app.route("/search/<id>", methods=["GET", "POST"])
+@login_required
 def searchid(id):
     if request.method == "GET":
         data = id
@@ -228,14 +177,22 @@ def searchid(id):
             connection.commit()
             return redirect("/mylist")
        
-@app.route("/mylist")
+@app.route("/mylist", methods=["GET", "POST"])
+@login_required
 def mylist():
-    user = session["user_id"]
-    watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
-    watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
-    print(watchlist)
-    return render_template("mylist.html", watchlist=watchlist, watched=watched)
-
+    if request.method == "GET":
+        user = session["user_id"]
+        watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
+        watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
+        print(watchlist)
+        return render_template("mylist.html", watchlist=watchlist, watched=watched)
+    if request.method == "POST":
+        if  request.form.get("remfav") == "Submit Query":
+                    user = session["user_id"]
+        watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
+        watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
+        print(watchlist)
+        return render_template("mylist.html", watchlist=watchlist, watched=watched)
 
 
 #//List of TODO//

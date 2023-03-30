@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block main %}
-<h2 style="height: 15vh; vertical-align: middle;">
+<h1 style="height: 15vh; vertical-align: middle;">
     Watchlist
-</h2>
+</h1>
 <div class="table-responsive-md">
     <table class="table table-borderless d-flex flex row text-wrap">
         
@@ -20,13 +20,21 @@
             <td><img src = "{{ item["url"] }}" class="rounded " style="width:10vw !important"></td>
             {% endfor %}
         </tr>
+        <tr class="p-1" style="width:10vw !important">
+            {% for item in watchlist %}
+            <form action="/mylist" method="post">
+                <td><input type = "submit" id = "remfav" class="btn-check" name="remfav">
+                <label class="btn btn-primary" for="remfav">Remove from Watchlist</label></td>
+            </form>
+            {% endfor %}
+        </tr>
         
     </table>
     <div>
     </div>
-    <h2 style="height: 15vh; vertical-align: middle;">
+    <h1 style="height: 15vh; vertical-align: middle;">
         Watched
-    </h2>
+    </h1>
 
     <table class="table table-borderless d-flex flex row text-wrap">
         
@@ -39,7 +47,14 @@
             <td><img src = "{{ item["url"] }}" class="rounded " style="width:10vw !important"></td>
             {% endfor %}
         </tr>
-        
+        <tr class="p-1" style="width:10vw !important">
+            {% for item in watched %}
+            <form action="/mylist" method="post">
+                <td><input type = "submit" id = "remwat" class="btn-check" name="remwat">
+                <label class="btn btn-primary" for="remwat">Remove from watched</label></td>
+            </form>
+            {% endfor %}
+        </tr>
     </table>
   </div>
   
