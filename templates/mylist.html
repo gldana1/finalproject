@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block main %}
-<h1 style="height: 15vh; vertical-align: middle;">
+<h1 style="line-height: 10vh; vertical-align: middle;background-color: black; opacity: 0.8;">
     Watchlist
 </h1>
 <div class="table-responsive-md">
-    <table class="table table-borderless d-flex flex row text-wrap">
+    <table class="table table-borderless d-flex flex row text-wrap" style="background-color: rgb(240, 240, 240, 0.8)">
         
         {% for item in watchlist %}
         <th class="p-1" style="width:10vw !important">{{  item["title"]  }}</th>
@@ -17,14 +17,22 @@
         
         <tr class="p-1" style="width:10vw !important">
             {% for item in watchlist %}
-            <td><img src = "{{ item["url"] }}" class="rounded " style="width:100% !important"></td>
+            <td><img src = "{{ item["url"] }}" class="rounded" style="width:100% !important"></td>
             {% endfor %}
         </tr>
         <tr class="p-1" style="width:10vw !important">
             {% for item in watchlist %}
             <form action="/mylist" method="post">
-                <td><input type = "submit" id = "remfav" class="btn-check" name="remfav">
-                <label class="btn btn-primary" for="remfav">Remove from Watchlist</label></td>
+                <td><input type = "submit" id = "remfav{{ item["ibdb_id"] }}" class="btn-check" name="remfav{{ item["ibdb_id"] }}" value="{{ item["ibdb_id"] }}">
+                <label class="btn btn-primary" for="remfav{{ item["ibdb_id"] }}" style="font-size: x-small;padding: 10px;">Remove from Watchlist</label></td>
+            </form>
+            {% endfor %}
+        </tr>
+        <tr class="p-1" style="width:10vw !important">
+            {% for item in watchlist %}
+            <form action="/mylist" method="post">
+                <td><input type = "submit" id = "addwat{{ item["ibdb_id"] }}" class="btn-check" name="addwat{{ item["ibdb_id"] }}" value="{{ item["ibdb_id"] }}">
+                <label class="btn btn-primary" for="addwat{{ item["ibdb_id"] }}" style="font-size: x-small;padding: 10px;background-color: rgb(250, 111, 132);">Add to Watched</label></td>
             </form>
             {% endfor %}
         </tr>
@@ -32,11 +40,11 @@
     </table>
     <div>
     </div>
-    <h1 style="height: 15vh; vertical-align: middle;">
+    <h1 style="line-height: 10vh; vertical-align: middle;background-color: black; opacity: 0.8;">
         Watched
     </h1>
 
-    <table class="table table-borderless d-flex flex row text-wrap">
+    <table class="table table-borderless d-flex flex row text-wrap" style="background-color: rgb(245, 245, 245, 0.8)">
         
         {% for item in watched %}
         <th class="p-1" style="width:10vw !important"> {{  item["title"]  }}</th>
@@ -50,8 +58,8 @@
         <tr class="p-1" style="width:10vw !important">
             {% for item in watched %}
             <form action="/mylist" method="post">
-                <td><input type = "submit" id = "remwat" class="btn-check" name="remwat">
-                <label class="btn btn-primary" for="remwat" style="font-size: x-small;">Remove from watched</label></td>
+                <td><input type = "submit" id = "remwat{{ item["ibdb_id"] }}" class="btn-check" name="remwat{{ item["ibdb_id"] }}" value="{{ item["ibdb_id"] }}">
+                <label class="btn btn-primary" for="remwat{{ item["ibdb_id"] }}" style="font-size: x-small;padding: 10px;">Remove from watched</label></td>
             </form>
             {% endfor %}
         </tr>

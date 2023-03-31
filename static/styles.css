@@ -10978,6 +10978,9 @@ html {
 }
 
 body {
+  color: rgb(255, 255, 255); 
+  
+  background-image: ".\static\background.jpg";
   letter-spacing: 0.0625em;
 }
 

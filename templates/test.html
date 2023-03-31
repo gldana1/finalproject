@@ -1,22 +1,23 @@
-{% extends "searched.html" %}
+{% extends "layout.html" %}
 
 {% block title %}
     Search
 {% endblock %}
 
 {% block main %}
-    {{ super() }}
-    <div id = "info" class="p-3 m-0 border-0 bd-example bd-example-cssgrid">
+
+    <div id = "info" class="table-responsive-md" >
         <img src = "{{ info[0]["url"] }}" class="rounded float-start" height = 200vh></td>
-        <table>
-            <tc>    
-                <div class="grid gap-3" style="margin-left: 20vw; text-align: left">                      
+        <table >
+            <tc >    
+                <div class="grid gap-3" style="margin-left: 20vw; text-align: left; color:black">                      
                     <div class="p-2 g-col-6" style=" font-size: larger; font-weight: 700;">{{ info[0]["title"] }}</div>
                     <div class="p-2 g-col-6">Rank: {{ info[0]["rank"] }}</div>   
                     <div class="p-2 g-col-6">Type: {{ info[0]["type"] }}</div>
                     <div class="p-2 g-col-6">Year: {{ info[0]["year"] }}</div>
                     <div class="p-2 g-col-6">Starring {{ info[0]["stars"] }}</div>
                 </div>
+                <br>
                 <div>
                     <form action="/search/{{ data }}" method="post">
                         

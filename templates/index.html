@@ -5,7 +5,23 @@
 {% endblock %}
     
 {% block main %}
-    <h1>Hello, {{ user["name"] }}</h1>
+    <h1>Hello, {{ name["name"] }}</h1>
     What do you want to see today?
-     
+    <br>
+    <br>
+    <div class="table-responsive-md">
+        <table class="table table-borderless d-flex flex row text-wrap" style="background-color: rgb(240, 240, 240, 0.8)">
+            
+            {% for item in watchlist %}
+            <th class="p-1" style="width:10vw !important">{{  item["title"]  }}</th>
+            {% endfor %}
+            
+            <tr class="p-1" style="width:10vw !important">
+                {% for item in watchlist %}
+                <td><img src = "{{ item["url"] }}" class="rounded" style="width:100% !important"></td>
+                {% endfor %}
+            </tr>
+           
+        </table>
+    </div>
 {% endblock %}

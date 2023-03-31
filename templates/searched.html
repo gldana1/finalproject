@@ -17,13 +17,18 @@
         </div>
     </form>
     <br>
+    <h4 style="mix-blend-mode: difference;">Click on an image to view details and add it to your list</h4>
     <br>
-    <div class="table-responsive-sm">
-        <table class="table table-borderless d-flex flex row text-wrap"  >
-            
+    <div class="table-responsive-md" style="background-color: rgb(245, 245, 245, 0.8);"">
+        <table class="table table-borderless d-flex flex row text-wrap">
+
+            {% for res in apiinput %}
+            <th class="p-1" style="width:10vw !important">{{ res["title"] }}</th>
+            {% endfor %}
+
             <tr  class="p-1" style="width:10vw !important">
                 {% for res in apiinput %}
-                <td class="p-1" style="width:10vw !important" id="{{res["ibdb_id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["url"] }}" style="width:100% !important"></td>
+                <td id="{{res["ibdb_id"]}}" onClick="reply_click(this.id)"><img src = "{{ res["url"] }}" class="rounded" style="width:100% !important"></td>
                 {% endfor %}
             </tr>
             <tr>    
@@ -33,8 +38,8 @@
             </tr>
             <tr>
                 {% for res in apiinput %}
-                    <td style="width:10vw !important">{{ res["year"] }}</td>
-                    {% endfor %}
+                    <td style="width:10vw !important">Year: {{ res["year"] }}</td>
+                {% endfor %}
             </tr>
             
         </table>

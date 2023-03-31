@@ -87,3 +87,9 @@ def dict_factory(cursor, row):
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+def search(myDict, lookup):
+    for key in myDict:
+        for v in key:
+            if lookup in v:
+                return key

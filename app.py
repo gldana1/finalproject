@@ -1,13 +1,13 @@
 import os
 import sqlite3
-import requests
+
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from markupsafe import escape
-import json
-from helpers import login_required,apicall,parse,dict_factory
+from helpers import login_required,apicall,parse,dict_factory,search
 app = Flask(__name__)
+from werkzeug.datastructures import ImmutableMultiDict
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -52,7 +52,7 @@ def login():
         username = request.form.get("username")
         rows = db.execute("SELECT * FROM users WHERE username = ?", [username]).fetchall()
 
-        print(rows)
+        #print(rows)
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             flash("invalid username and/or password", 403)
@@ -116,8 +116,10 @@ rows = db.execute("SELECT * FROM users").fetchall()
 @app.route("/")
 @login_required
 def homepage():
-    user = db.execute("SELECT name FROM users WHERE id = (?)",(session["user_id"],)).fetchone()
-    return render_template("index.html", user=user)
+    name = db.execute("SELECT name FROM users WHERE id = (?)",(session["user_id"],)).fetchone()
+    user = session["user_id"]
+    watchlist = db.execute("SELECT title,url,ibdb_id FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
+    return render_template("index.html", name=name,watchlist=watchlist)
 
 
 
@@ -143,15 +145,15 @@ def searchid(id):
     if request.method == "GET":
         data = id
         info = db.execute("SELECT * FROM movies WHERE ibdb_id LIKE (?)", [data]).fetchall()
-        #print(info)
+        print(info)
         return render_template("test.html", info=info, data=data)
     if request.method == "POST":
         data = id
         movie = db.execute("SELECT id FROM movies WHERE ibdb_id LIKE (?)", [id]).fetchone()
         movie_id = movie["id"]
-        print(request.form)
-        print(request.form.get("addwat"))
-        print(request.form.get("addfav"))
+        #print(request.form)
+        #print(request.form.get("addwat"))
+        #print(request.form.get("addfav"))
         user = session["user_id"]
         if  request.form.get("addfav") == "Submit Query":
             #wl = request.form.get("addfav")
@@ -171,14 +173,52 @@ def searchid(id):
 def mylist():
     if request.method == "GET":
         user = session["user_id"]
-        watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
-        watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
-        print(watchlist)
+        watchlist = db.execute("SELECT title,url,ibdb_id FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
+        watched = db.execute("SELECT title,url,ibdb_id FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
+        #print(watchlist)
         return render_template("mylist.html", watchlist=watchlist, watched=watched)
     if request.method == "POST":
-        if  request.form.get("remfav") == "Submit Query":
-            user = session["user_id"]
-        watchlist = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
-        watched = db.execute("SELECT title,url FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
-        print(watchlist)
+        #print(request.form)
+        user = session["user_id"]
+        test = request.form.to_dict(flat=True)
+        test2 = list(test.keys())
+        ibdb = str(test2[0][0:6])
+        #print(ibdb)
+        if "remwat" == ibdb:
+            movie_id = request.form[test2[0]]
+            tmp = db.execute("SELECT id FROM movies WHERE ibdb_id = (?)", [
+                             movie_id]).fetchone()
+            favid = tmp["id"]
+            #print(movie_id)
+            #print(user)
+            #print(favid)
+            db.execute(
+                "DELETE FROM favorites WHERE id IN (SELECT id FROM favorites WHERE user_id = ? AND movie_id = ? AND watched = 1)", (user, favid))
+            connection.commit()
+        elif "remfav" in ibdb:
+            movie_id = request.form[test2[0]]
+            tmp = db.execute("SELECT id FROM movies WHERE ibdb_id = (?)", [
+                             movie_id]).fetchone()
+            favid = tmp["id"]
+            #print(movie_id)
+            #print(user)
+            #print(favid)
+            db.execute(
+                "DELETE FROM favorites WHERE id IN (SELECT id FROM favorites WHERE user_id = ? AND movie_id = ? AND watchlist = 1)", (user, favid))
+            connection.commit()
+        elif "addwat" in ibdb:
+            movie_id = request.form[test2[0]]
+            tmp = db.execute("SELECT id FROM movies WHERE ibdb_id = (?)", [
+                             movie_id]).fetchone()
+            favid = tmp["id"]
+            #print(movie_id)
+            #print(user)
+            #print(favid)
+            db.execute("INSERT INTO favorites (user_id,movie_id,watched) VALUES (?,?,1) EXCEPT SELECT user_id,movie_id,watched FROM favorites WHERE user_id = ? AND movie_id = ? AND watched = 1", (user,favid,user,favid))
+            connection.commit()
+            db.execute("DELETE FROM favorites WHERE id IN (SELECT id FROM favorites WHERE user_id = ? AND movie_id = ? AND watchlist = 1)", (user,favid))
+            connection.commit()
+        watchlist = db.execute("SELECT title,url,ibdb_id FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watchlist = 1",(user,)).fetchall()
+        watched = db.execute("SELECT title,url,ibdb_id FROM favorites JOIN movies ON movie_id = movies.id WHERE user_id = (?) AND watched = 1",(user,)).fetchall()
+        #print(watchlist)
         return render_template("mylist.html", watchlist=watchlist, watched=watched)
