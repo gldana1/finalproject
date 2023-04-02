@@ -31,7 +31,7 @@ def apicall(item):
     querystring = {"q":item}
 
     headers = {
-        "X-RapidAPI-Key": "de32aed7c6mshc427496794b63e2p151e0fjsn9afca0074b65",
+        "X-RapidAPI-Key": "xxx",
         "X-RapidAPI-Host": "imdb8.p.rapidapi.com"
     }
 
